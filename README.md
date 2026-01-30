@@ -240,10 +240,6 @@ void loop() {
    
 ### Корпус
 <img width="600" height="450" alt="image" src="https://github.com/user-attachments/assets/f7a24081-6e39-4853-a541-639ff952ee1d" />
-<img width="677" height="582" alt="switch_on_off_(Assembly)_2026-Jan-30_03-03-00PM-000_CustomizedView6114900761" src="https://github.com/user-attachments/assets/ff9c33ad-0194-4b34-be3b-d2317a78e69d" />
-<img width="586" height="407" alt="switch_on_off_(Assembly)_2026-Jan-30_03-03-56PM-000_CustomizedView3372901794" src="https://github.com/user-attachments/assets/a190cf72-ba0e-4362-949a-a6fc68fb40ac" />
-<img width="683" height="471" alt="switch_on_off_(Assembly)_2026-Jan-30_03-04-31PM-000_CustomizedView45097458929" src="https://github.com/user-attachments/assets/33a53c8c-84c8-4117-a7b7-a74aeeb0797b" />
-<img width="639" height="523" alt="switch_on_off_(Assembly)_2026-Jan-30_03-04-57PM-000_CustomizedView7035140970" src="https://github.com/user-attachments/assets/de01c9df-df1c-4841-8da1-1000f9a542d8" />
 
 
 
@@ -255,6 +251,7 @@ void loop() {
 
 У нас есть 2 резистора по 100 кОм (достаточно, что бы не сажать аккумулятор). Т.к. они одинаковые, то напяжение делится ровно на 2.
 <img width="412" height="823" alt="Pasted image 20260130142752" src="https://github.com/user-attachments/assets/b2857555-1d42-4118-b678-0c4ea366d1d2" />
+<img width="962" height="722" alt="switch_on_off_(Assembly)_2026-Jan-30_03-17-33PM-000_CustomizedView12898845464" src="https://github.com/user-attachments/assets/c91158fe-cfa3-4001-83f8-69b85d3872c1" />
 
 
 Т.е. наш аналоговый вход на плате будет измерять от 0 В до 1.85 В при полной зарядке.
