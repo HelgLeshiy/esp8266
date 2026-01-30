@@ -240,6 +240,7 @@ void loop() {
    
 ### Корпус
 <img width="600" height="450" alt="image" src="https://github.com/user-attachments/assets/f7a24081-6e39-4853-a541-639ff952ee1d" />
+<img width="962" height="722" alt="switch_on_off_(Assembly)_2026-Jan-30_03-17-33PM-000_CustomizedView12898845464" src="https://github.com/user-attachments/assets/d426fb2d-01b9-463b-8b4d-34f104cdea95" />
 
 
 
