@@ -53,57 +53,91 @@ void loop() {
 #include <ESP8266HTTPClient.h>
 #include <Arduino_JSON.h>
 
-
 #define SCL 5 // I2C interface pin (marked D1 on board)
 #define SDA 4 // I2C interface pin (marked D2 on board)
-#define OLED_ADDR // oled screen address in I2C bus is 0x3c by default
+#define OLED_ADDR 0x3c// oled screen address in I2C bus is 0x3c by default
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 
-const char* WIFI_SSID = "your wifi ssid";
-const char* WIFI_PASS = "pwd";
-const char* SERVER_NAME = "http://goweather.xyz";
+const char* WIFI_SSID = "your wifi name";
+const char* WIFI_PASS = "pass";
+const String SERVER_NAME = "http://api.open-meteo.com/v1";
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
+const char* getWMOStringProgmem(int code) {
+  switch(code) {
+    case 0: return PSTR("Clear");
+    case 1: return PSTR("Mainly Clear");
+    case 2: return PSTR("Partly Cloudy");
+    case 3: return PSTR("Overcast");
+    case 45: return PSTR("Fog");
+    case 48: return PSTR("Rime Fog");
+    case 51: return PSTR("Light Drizzle");
+    case 53: return PSTR("Moderate Drizzle");
+    case 55: return PSTR("Heavy Drizzle");
+    case 56: return PSTR("Light Freezing Drizzle");
+    case 57: return PSTR("Heavy Freezing Drizzle");
+    case 61: return PSTR("Light Rain");
+    case 63: return PSTR("Moderate Rain");
+    case 65: return PSTR("Heavy Rain");
+    case 66: return PSTR("Light Freezing Rain");
+    case 67: return PSTR("Heavy Freezing Rain");
+    case 71: return PSTR("Light Snow");
+    case 73: return PSTR("Moderate Snow");
+    case 75: return PSTR("Heavy Snow");
+    case 77: return PSTR("Snow Grains");
+    case 80: return PSTR("Light Showers");
+    case 81: return PSTR("Moderate Showers");
+    case 82: return PSTR("Violent Showers");
+    case 85: return PSTR("Light Snow Showers");
+    case 86: return PSTR("Heavy Snow Showers");
+    case 95: return PSTR("Thunderstorm");
+    case 96: return PSTR("Thunderstorm with Hail");
+    case 99: return PSTR("Heavy Thunderstorm with Hail");
+    default: return PSTR("Unknown");
+  }
+}
+
+
 void setup() {
-    Serial.begin(115200); // 115200 is serial speed
-    
-    Wire.begin(SDA, SCL); // SDA, SCL on NodeMCU
-    
-    // OLED init
-    if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR)) {
-        Serial.println("SSD1306 allocation failed");
-    }
-    else {
-        display.clearDisplay();
-        display.setTextSize(1);
-        display.setTextColor(SSD1306_WHITE);
-        display.setCursor(0, 0);
-        display.println("Booting...");
-        display.display();
-    }
+    Serial.begin(115200); // 115200 is serial speed
+    
+    Wire.begin(SDA, SCL); // SDA, SCL on NodeMCU
+    
+    // OLED init
+    if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR)) {
+        Serial.println("SSD1306 allocation failed");
+    }
+    else {
+        display.clearDisplay();
+        display.setTextSize(1);
+        display.setTextColor(SSD1306_WHITE);
+        display.setCursor(0, 0);
+        display.println("Booting...");
+        display.display();
+    }
 
-    // WiFi
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(WIFI_SSID, WIFI_PASS);
+    // WiFi
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(WIFI_SSID, WIFI_PASS);
 
-    Serial.print("Connecting WiFi");
-    unsigned long start = millis();
-    while (WiFi.status() != WL_CONNECTED && millis() - start < 15000) {
-        delay(250);
-        Serial.print(".");
-    }
+    Serial.print("Connecting WiFi");
+    unsigned long start = millis();
+    while (WiFi.status() != WL_CONNECTED && millis() - start < 15000) {
+        delay(250);
+        Serial.print(".");
+    }
 
-    Serial.println();
-    if (WiFi.status() == WL_CONNECTED) {
-        Serial.print("WiFi connected. IP: ");
-        Serial.println(WiFi.localIP());
-    }
-    else {
-        Serial.println("WiFi NOT connected (continuing offline).");
-    }
+    Serial.println();
+    if (WiFi.status() == WL_CONNECTED) {
+        Serial.print("WiFi connected. IP: ");
+        Serial.println(WiFi.localIP());
+    }
+    else {
+        Serial.println("WiFi NOT connected (continuing offline).");
+    }
 }
 
 void loop() {
@@ -111,7 +145,7 @@ void loop() {
       WiFiClient client;
       HTTPClient http;
 
-      String serverPath = serverName + "/weather/Moscow";
+      String serverPath = SERVER_NAME + "/forecast?latitude=55.7558&longitude=37.6173&current_weather=true";
       
       http.begin(client, serverPath.c_str());
 
@@ -123,29 +157,30 @@ void loop() {
         String payload = http.getString();
         Serial.println(payload);
 
-		JSONVar weather_object = JSON.parse(sensorReadings);
-		if (JSON.typeof(weather_object) == "undefined") {
-	        Serial.println("Parsing input failed!");
-	        return;
-	    }
-		
-		String temp = JSON.stringify(weather_object["temperature"]);
-		String wind = JSON.stringify(weather_object["wind"]);
-		String description = JSON.stringify(weather_object["description"]);
-		
-		display.clearDisplay();
-        display.setTextSize(1);
-        display.setTextColor(SSD1306_WHITE);
-        
-        display.setCursor(0, 0);
-        display.println("Weather");
-        
-        display.setCursor(0, 20);
-        displey.println("Temp: " + temp);
-        displey.println("Wind: " + wind);
-        displey.println(description);
-        
-        display.display();
+        JSONVar weather_object = JSON.parse(payload);
+        if (JSON.typeof(weather_object) == "undefined") {
+            Serial.println("Parsing input failed!");
+            return;
+        }
+        
+        String temp = JSON.stringify(weather_object["current_weather"]["temperature"]);
+        String wind = JSON.stringify(weather_object["current_weather"]["windspeed"]);
+        int wmo_code = int(weather_object["current_weather"]["weathercode"]);
+        String description = getWMOStringProgmem(wmo_code);
+        
+        display.clearDisplay();
+        display.setTextSize(1);
+        display.setTextColor(SSD1306_WHITE);
+        
+        display.setCursor(0, 0);
+        display.println("Weather");
+        
+        display.setCursor(0, 20);
+        display.println("Temp: " + temp);
+        display.println("Wind: " + wind);
+        display.println(description);
+        
+        display.display();
       }
       else {
         Serial.print("Error code: ");
